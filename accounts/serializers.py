@@ -10,4 +10,3 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "date_of_birth",
             ]
-    

@@ -15,17 +15,17 @@ def validate_signup(signup_data):
 
     # validation_username
     if User.objects.filter(username=username).exists():
-        err_msg.append('이미 존재하는 아이디입니다.')
+        err_msg.append({"username":'이미 존재하는 아이디입니다.'})
 
     # validation_password
     if not password == password2:
-        err_msg.append('비밀번호가 일치하지 않습니다.')
+        err_msg.append({'password':'비밀번호가 일치하지 않습니다.'})
 
     # validation_email
     try:
         validate_email(email)
     except:
-        err_msg.append('이메일 형식이 올바르지 않습니다.')
+        err_msg.append({'email':'이메일 형식이 올바르지 않습니다.'})
     
     if err_msg:
         return False, err_msg 
