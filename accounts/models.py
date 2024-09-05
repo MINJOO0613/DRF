@@ -7,7 +7,6 @@ class User(AbstractUser):
         ('F', '여성(female)'),
     )
 
-    name = models.CharField(verbose_name='이름', max_length=30)
     nickname = models.CharField(verbose_name='닉네임', max_length=20)
     date_of_birth = models.DateField(verbose_name='생년월일')
     gender = models.CharField(

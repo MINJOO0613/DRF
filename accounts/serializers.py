@@ -1,8 +1,13 @@
 from .models import User # User 모델
 from rest_framework import serializers
 
-class SignupSerializer(serializer.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["pk", "username", "password", "email"]
+        fields = [
+            "id",
+            "username",
+            "email",
+            "date_of_birth",
+            ]
     
