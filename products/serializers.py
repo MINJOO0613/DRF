@@ -5,3 +5,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
+        read_only_fields = ['id', 'author', 'created_at', 'updated_at']
+
+
+# class ProductDetailSerializer(serializers.ModelSerializer):
+#     class Meta:
