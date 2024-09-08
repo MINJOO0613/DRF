@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import check_password
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,10 +9,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.permissions import IsAuthenticated
 from .models import User
-from .validators import validate_signup
+from .validators import validate_signup, validate_password_change
 from .serializers import UserSerializer
 
-# # 회원가입
+# 회원가입
 # - Endpoint: `/api/accounts`
 # - Method: `POST`
 # - 조건: username, 비밀번호, 이메일, 이름, 닉네임, 생일 필수 입력하며 성별, 자기소개 생략 가능
@@ -81,6 +81,10 @@ class LoginView(APIView):
 
 
 # 로그아웃
+# - Endpoint: `/api/accounts/logout`
+# - Method: `POST`
+# - 조건: 로그인 상태 필요.
+# - 구현: 토큰 무효화 또는 다른 방법으로 로그아웃 처리 가능.
 class LogoutView(APIView):
     def post(self, request):
         refresh_token_str = request.data.get("refresh_token")
@@ -95,25 +99,24 @@ class LogoutView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-# 비밀번호 변경
-class PasswordView(APIView):
+# 패스워드 변경
+# - Endpoint: `/api/accounts/password`
+# - Method: `PUT`
+# - 조건: 기존 패스워드와 변경할 패스워드는 상이해야 함
+# - 검증: 패스워드 규칙 검증
+# - 구현: 패스워드 검증 후 데이터베이스에 업데이트.
+class PasswordChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def put(self, request, username):
         user = get_object_or_404(User, username=username)
-
-        password = user.password
-        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
 
         # validation
-        if not check_password(old_password, password):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        is_valid, err_msg = validate_password_change(user, request.data)
+        if not is_valid:
+            return Response({"error":err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
-        new_password = request.data.get("new_password")
-        new_password2 = request.data.get("new_password2")
-
-        if new_password != new_password2 :
-            return Response({"msg":"비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # 비밀번호 해싱처리 및 변경된 비밀번호로 저장
         try:
             user.set_password(new_password)
             user.save()
