@@ -17,3 +17,9 @@ class User(AbstractUser):
         blank=True,
         )
     description = models.TextField(verbose_name='자기소개', null=True, blank=True)
+    
+
+    # 회원탈퇴 시, 계정을 비활성화 상태로 변경
+    def soft_delete(self):
+        self.is_active = False
+        self.save()

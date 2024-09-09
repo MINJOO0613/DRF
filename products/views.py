@@ -9,12 +9,14 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Product
 from .serializers import ProductSerializer
 
+# permission (IsAuthenticated/ReadOnly)
 class ReadOnly(BasePermission):
     #읽기 전용 권한으로 설정함.
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
     
 
+# 페이지네이션
 class ProductPagination(PageNumberPagination):
     page_size = 10  # 페이지당 10개 항목 반환
     page_size_query_param = 'page_size'
@@ -37,7 +39,6 @@ class ProductListView(APIView):
         paginated_products = paginator.paginate_queryset(products, request)
 
         serializer = ProductSerializer(paginated_products, many=True)
-        serializer["like_count"]=product.like_count
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -55,7 +56,6 @@ class ProductListView(APIView):
 
 class ProductDetailView(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
-
 
     def get_object(self, pk):
         return get_object_or_404(Product, pk=pk)
@@ -97,10 +97,10 @@ class ProductDetailView(APIView):
         product = self.get_object(pk)
 
         if product.author != request.user:
-            return Response({"detail": "삭제 권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"message": "삭제 권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         
         product.delete()
-        data = {"pk": f"{pk}번 상품이 삭제되었습니다."}
+        data = {"success": f"{pk}번 상품이 삭제되었습니다."}
         return Response(data, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -119,10 +119,4 @@ class ProductLikeAPI(APIView):
         else:
             product.like_products.remove(user)
             return Response({"message": "좋아요가 취소되었습니다.", "like_count": product.like_count}, status=status.HTTP_200_OK)
-
-
-
-
-
-
 

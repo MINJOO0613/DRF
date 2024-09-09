@@ -16,7 +16,7 @@ class Product(models.Model):
     def __str__(self):
         return self.title
     
-    # 게시글 좋아요 기능
+    # 게시글 좋아요 수 기능
     @property
     def like_count(self):
         return self.like_products.count()

@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.permissions import IsAuthenticated
 from .models import User
 from .validators import validate_signup, validate_password_change, validate_profile
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ProfileSerializer
 
 
 class ReadOnly(BasePermission):
@@ -19,13 +20,13 @@ class ReadOnly(BasePermission):
         return request.method in SAFE_METHODS
 
 
+class SignupView(APIView):
 # 회원가입
 # - Endpoint: `/api/accounts`
 # - Method: `POST`
 # - 조건: username, 비밀번호, 이메일, 이름, 닉네임, 생일 필수 입력하며 성별, 자기소개 생략 가능
 # - 검증: username과 이메일은 유일해야 하며, 이메일 중복 검증(선택 기능).
 # - 구현: 데이터 검증 후 저장.
-class SignupView(APIView):
     def post(self, request):
         # validation
         is_valid, err_msg = validate_signup(request.data)
@@ -50,6 +51,24 @@ class SignupView(APIView):
             "refresh_token": str(refresh)
         }
         return Response(res_data, status=status.HTTP_201_CREATED)
+
+
+# - 회원 탈퇴
+# Endpoint: `/api/accounts`
+# Method: `DELETE`
+# 조건: 로그인 상태, 비밀번호 재입력 필요.
+# 검증: 입력된 비밀번호가 기존 비밀번호와 일치해야 함.
+# 구현: 비밀번호 확인 후 계정 삭제.
+    def delete(self, request):
+        user = request.user
+
+        password = request.data.get("password")
+        if not password or not check_password(password, user.password):
+            return Response({"error": "비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 회원탈퇴(계정 비활성화)
+        user.soft_delete()
+        return Response({"success": "계정이 성공적으로 탈퇴되었습니다."}, status=status.HTTP_204_NO_CONTENT)
 
 
 # 로그인
@@ -105,7 +124,7 @@ class LogoutView(APIView):
             )
 
         refresh_token.blacklist()
-        return Response(status=status.HTTP_200_OK)
+        return Response({"success": "로그아웃 되었습니다."},status=status.HTTP_200_OK)
 
 
 # 패스워드 변경
@@ -153,13 +172,6 @@ class ProfileView(APIView):
     # 프로필 수정(회원정보 수정)
     def put(self, request, username):
         user = User.objects.get(username=username)
-        print(request.user)
-        print(user.username)
-        print(username)
-        print(user)
-
-        print(type(request.user))
-        print(type(user.username))
 
         # 본인 프로필만 수정할 수 있음
         if user != request.user:

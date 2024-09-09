@@ -5,33 +5,29 @@ from rest_framework.serializers import ValidationError
 from .models import User
 
 # 회원가입 시, validator
-def validate_signup(profile_data):
-    username = profile_data.get("username")
-    password = profile_data.get("password")
-    password2 = profile_data.get("password2")
-    first_name = profile_data.get("first_name")
-    last_name = profile_data.get("last_name")
-    email = profile_data.get("email")
-    nickname = profile_data.get("nickname")
-    date_of_birth = profile_data.get("date_of_birth")
-
+def validate_signup(user_data):
     err_msg = []
 
     # validation_username
-    if User.objects.filter(username=username).exists():
-        err_msg.append({"username":'이미 존재하는 아이디입니다.'})
+    if username := user_data.get("username"):
+        if User.objects.filter(username=username).exists():
+            err_msg.append({"username":'이미 존재하는 아이디입니다.'})
 
-    # validation_password
+    # validation_password    
+    password = user_data.get("password")
+    password2 = user_data.get("password2")
     if not password == password2:
         err_msg.append({'password':'비밀번호가 일치하지 않습니다.'})
 
     # validation_email
-    if User.objects.filter(email=email).exists():
-        err_msg.append({"username":'이미 존재하는 이메일입니다.'})
-    try:
-        validate_email(email)
-    except:
-        err_msg.append({'email':'이메일 형식이 올바르지 않습니다.'})
+    if email := user_data.get("email"):
+        if User.objects.filter(email=email).exists():
+            err_msg.append({"email":'이미 존재하는 이메일입니다.'})
+        else:
+            try:
+                validate_email(email)
+            except:
+                err_msg.append({'email':'이메일 형식이 올바르지 않습니다.'})
     
     # 에러메시지
     if err_msg:
@@ -72,22 +68,17 @@ def validate_password_change(user, password_data):
     return True, err_msg
 
 
-
-def validate_profile(profile_data):
-    username = profile_data.get("username")
-    email = profile_data.get("email")
-    nickname = profile_data.get("nickname")
-    date_of_birth = profile_data.get("date_of_birth")
-
+# 프로필 수정 시, validator (회원정보 수정)
+def validate_profile(user_data):
     err_msg = []
 
     # validation_username
-    if username:
+    if username := user_data.get("username"):
         if User.objects.filter(username=username).exists():
             err_msg.append({"username":'이미 존재하는 아이디입니다.'})
 
     # validation_email
-    if email:
+    if email := user_data.get("email"):
         if User.objects.filter(email=email).exists():
             err_msg.append({"email":'이미 존재하는 이메일입니다.'})
         else:
