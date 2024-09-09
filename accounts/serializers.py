@@ -9,4 +9,5 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "email",
             "date_of_birth",
+            "nickname"
             ]

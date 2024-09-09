@@ -10,13 +10,13 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to="images/", blank=True)
+    like_products = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_users")
 
 
     def __str__(self):
         return self.title
-    # likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_products")
     
     # 게시글 좋아요 기능
-    # @property
-    # def like_count(self):
-    #     return self.likes.count()
+    @property
+    def like_count(self):
+        return self.like_products.count()

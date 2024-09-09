@@ -1,16 +1,23 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
-
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.permissions import IsAuthenticated
 from .models import User
-from .validators import validate_signup, validate_password_change
+from .validators import validate_signup, validate_password_change, validate_profile
 from .serializers import UserSerializer
+
+
+class ReadOnly(BasePermission):
+    #읽기 전용 권한으로 설정함.
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
 
 # 회원가입
 # - Endpoint: `/api/accounts`
@@ -86,6 +93,8 @@ class LoginView(APIView):
 # - 조건: 로그인 상태 필요.
 # - 구현: 토큰 무효화 또는 다른 방법으로 로그아웃 처리 가능.
 class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         refresh_token_str = request.data.get("refresh_token")
         try:
@@ -126,14 +135,14 @@ class PasswordChangeView(APIView):
             return Response({"msg": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
-# #프로필 조회
+# 프로필 조회
 # - Endpoint: `/api/accounts/<str:username>`
 # - Method: `GET'
 # - 조건: 로그인 상태 필요.
 # - 검증: 로그인한 사용자만 프로필 조회 가능
 # - 구현: 로그인한 사용자의 정보를 JSON 형태로 반환.
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated | ReadOnly]
 
     # 프로필 조회
     def get(self, request, username):
@@ -141,9 +150,29 @@ class ProfileView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
     
-    # 회원정보 수정
-    def put(self, reqeust, username):
-        pass
+    # 프로필 수정(회원정보 수정)
+    def put(self, request, username):
+        user = User.objects.get(username=username)
+        print(request.user)
+        print(user.username)
+        print(username)
+        print(user)
 
+        print(type(request.user))
+        print(type(user.username))
+
+        # 본인 프로필만 수정할 수 있음
+        if user != request.user:
+            return Response({"message": "수정 권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # validation
+        is_valid, err_msg = validate_profile(request.data)
+        if not is_valid:
+            return Response({"error":err_msg}, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
 
 

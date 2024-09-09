@@ -9,10 +9,10 @@ from rest_framework_simplejwt.views import(
 app_name = "accounts"
 urlpatterns = [
     # path("signin/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("", views.SignupView.as_view(), name="sign_up_view"),
-    path("login/", views.LoginView.as_view(), name="log_in_view"),
-    path("logout/", views.LogoutView.as_view(), name="log_out_view"),
-    path("password/<str:username>/", views.PasswordChangeView.as_view(), name="password_change_view"),
-    path("<str:username>/", views.ProfileView.as_view(), name="profile_view"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"), # refresh_token 발행
+    path("", views.SignupView.as_view(), name="sign_up_view"), # 회원가입 및 token 발행
+    path("login/", views.LoginView.as_view(), name="log_in_view"), # 로그인 및 token 발행
+    path("logout/", views.LogoutView.as_view(), name="log_out_view"), # 로그아웃 및 refresh_token 블랙리스트 처리
+    path("password/<str:username>/", views.PasswordChangeView.as_view(), name="password_change_view"), # 패스워드 변경
+    path("<str:username>/", views.ProfileView.as_view(), name="profile_view"), # 프로필 조회 및 회원정보 수정
 ]

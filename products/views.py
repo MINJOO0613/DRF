@@ -37,6 +37,7 @@ class ProductListView(APIView):
         paginated_products = paginator.paginate_queryset(products, request)
 
         serializer = ProductSerializer(paginated_products, many=True)
+        serializer["like_count"]=product.like_count
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -104,6 +105,20 @@ class ProductDetailView(APIView):
 
 
 
+# 게시글 좋아요 기능
+class ProductLikeAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, pk=product_id)
+        user = request.user
+
+        if not user in product.like_products.all():
+            product.like_products.add(user)
+            return Response({"message": "좋아요가 추가되었습니다.", "like_count": product.like_count}, status=status.HTTP_200_OK)
+        else:
+            product.like_products.remove(user)
+            return Response({"message": "좋아요가 취소되었습니다.", "like_count": product.like_count}, status=status.HTTP_200_OK)
 
 
 
@@ -111,16 +126,3 @@ class ProductDetailView(APIView):
 
 
 
-
-
-# class ProductLikeAPI(APIView):
-#     def post(self, request, product_id):
-#         product = get_object_or_404(Product, pk=product_id)
-#         user = request.user
-
-#         if user in product.likes.all():
-#             product.likes.remove(user)
-#             return Response({"message": "좋아요가 취소되었습니다.", "like_count": product.like_count}, status=status.HTTP_200_OK)
-#         else:
-#             product.likes.add(user)
-#             return Response({"message": "좋아요가 추가되었습니다.", "like_count": product.like_count}, status=status.HTTP_200_OK)
