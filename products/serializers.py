@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from .models import Product
+from rest_framework import serializers
 
 class ProductSerializer(serializers.ModelSerializer):
     # 좋아요 수 필드 추가
@@ -11,8 +11,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'author', 'title', 'content', 'created_at', 'image', 'like_count']
-        read_only_fields = ['id', 'author', 'created_at', 'updated_at','like_products']
+        read_only_fields = ['id', 'author', 'created_at', 'like_count']
         
-    # author필드를 pk값이 아닌 usernamed으로 반환
+    # author필드를 pk값이 아닌 username으로 반환
     def get_author(self, obj):
         return obj.author.username

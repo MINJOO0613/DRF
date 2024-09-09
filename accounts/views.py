@@ -136,8 +136,8 @@ class LogoutView(APIView):
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def put(self, request):
+        user = request.user
         new_password = request.data.get("new_password")
 
         # validation
@@ -154,24 +154,30 @@ class PasswordChangeView(APIView):
             return Response({"msg": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated | ReadOnly]
+
 # 프로필 조회
 # - Endpoint: `/api/accounts/<str:username>`
 # - Method: `GET'
 # - 조건: 로그인 상태 필요.
 # - 검증: 로그인한 사용자만 프로필 조회 가능
 # - 구현: 로그인한 사용자의 정보를 JSON 형태로 반환.
-class ProfileView(APIView):
-    permission_classes = [IsAuthenticated | ReadOnly]
-
-    # 프로필 조회
     def get(self, request, username):
-        user = User.objects.get(username=username)
-        serializer = UserSerializer(user)
+        # 프로필 조회할 username 검색
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "사용자를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ProfileSerializer(user)
         return Response(serializer.data)
     
     # 프로필 수정(회원정보 수정)
     def put(self, request, username):
-        user = User.objects.get(username=username)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "사용자를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         # 본인 프로필만 수정할 수 있음
         if user != request.user:
@@ -182,9 +188,28 @@ class ProfileView(APIView):
         if not is_valid:
             return Response({"error":err_msg}, status=status.HTTP_400_BAD_REQUEST)
         
-        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer = ProfileSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
 
+
+# 팔로잉 시스템
+# - 사용자 간의 ManyToMany 관계를 통한 팔로잉 기능
+class FollowAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, username):
+        user_to_follow = get_object_or_404(User, username=username)
+        current_user = request.user
+
+        if user_to_follow == current_user:
+            return Response({"error": "본인의 계정을 팔로우할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if current_user.following.filter(username=username).exists():
+            current_user.following.remove(user_to_follow)
+            return Response({"message": "언팔로우되었습니다."}, status=status.HTTP_200_OK)
+        else:
+            current_user.following.add(user_to_follow)
+            return Response({"message": "팔로우되었습니다."}, status=status.HTTP_200_OK)
 

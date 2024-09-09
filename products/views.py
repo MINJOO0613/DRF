@@ -3,11 +3,11 @@ from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Product
 from .serializers import ProductSerializer
+from .pagination import ProductPagination
 
 # permission (IsAuthenticated/ReadOnly)
 class ReadOnly(BasePermission):
@@ -15,13 +15,6 @@ class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
     
-
-# 페이지네이션
-class ProductPagination(PageNumberPagination):
-    page_size = 10  # 페이지당 10개 항목 반환
-    page_size_query_param = 'page_size'
-    max_page_size = 100  # 최대 페이지 크기 제한
-
 
 class ProductListView(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
@@ -32,7 +25,7 @@ class ProductListView(APIView):
     # 조건: 로그인 상태 불필요.
     # 구현: 모든 상품 목록 페이지네이션으로 반환.
     def get(self, request):
-        products = Product.objects.all().order_by('-created_at')
+        products = Product.objects.all()
 
         # 페이지네이터 객체 생성
         paginator = ProductPagination()

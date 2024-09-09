@@ -95,8 +95,8 @@ DATABASES = {
 AUTH_USER_MODEL = "accounts.User"
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # 기본 페이지네이션 클래스 설정
-    'PAGE_SIZE': 10,  # 한 페이지에 표시할 개수
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',  # 기본 페이지네이션 클래스 설정
+    'PAGE_SIZE': 50,  # 한 페이지에 표시할 개수
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
