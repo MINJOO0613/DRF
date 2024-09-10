@@ -89,7 +89,7 @@ Django==4.2
 ## **설치 및 실행 방법**
 **1. 클론 리포지토리**
 ```
-git clone https://github.com/MINJOO0613/DRF
+git clone https://github.com/MINJOO0613/DRF.git
 ```
 
 
