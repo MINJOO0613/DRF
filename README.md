@@ -4,9 +4,11 @@ Spartamarket_DRF는 **Django Rest Framework로 만드는 API** 입니다.
 **사용자는 이 API를 통해 회원 가입, 로그인, 상품 등록 및 관리 기능**을 사용할 수 있습니다. 
 
 **JWT 인증 방식**을 사용하며, **모든 사용자 정보와 상품 데이터는 안전하게 데이터베이스에 저장**됩니다.
+<br/><br/><br/><br/>
 
 ## **개발 기간**
 2024.09.01.~2024.09.10
+<br/><br/><br/><br/>
 
 ## **개발 환경**
 **Python :** Django DRF
@@ -16,10 +18,73 @@ Spartamarket_DRF는 **Django Rest Framework로 만드는 API** 입니다.
 - **JWT**: 사용자 인증 및 권한 관리
 - **DRF:** Django 기반 REST API 구현
 - **SQLite:** 간단한 로컬 데이터베이스
+<br/><br/><br/><br/>
 
 
 ## **ERD**
 ![my_project_visualized](https://github.com/user-attachments/assets/7c066584-5b37-46d7-b4c5-1cf8e33b6db7)
+<br/><br/><br/><br/>
+
+## **Requirements**
+```
+Python==3.10.11
+Django==4.2
+```
+- annotated-types==0.7.0
+- anyio==4.4.0
+- asgiref==3.8.1
+- async-timeout==4.0.3
+- attrs==24.2.0
+- autopep8==2.3.1
+- certifi==2024.8.30
+- colorama==0.4.6
+- distro==1.9.0
+- **Django==4.2**
+- django-extensions==3.2.3
+- django-redis==5.4.0
+- django-seed==0.3.1
+- django-silk==5.2.0
+- djangorestframework==3.15.2
+- djangorestframework-simplejwt==5.3.1
+- drf-spectacular==0.27.2
+- exceptiongroup==1.2.2
+- Faker==28.0.0
+- gprof2dot==2024.6.6
+- h11==0.14.0
+- httpcore==1.0.5
+- httpx==0.27.2
+- idna==3.8
+- inflection==0.5.1
+- jiter==0.5.0
+- jsonschema==4.23.0
+- jsonschema-specifications==2023.12.1
+- openai==1.43.0
+- pillow==10.4.0
+- psycopg2==2.9.9
+- pycodestyle==2.12.1
+- pydantic==2.8.2
+- pydantic_core==2.20.1
+- pydotplus==2.0.2
+- PyJWT==2.9.0
+- pyparsing==3.1.4
+- python-dateutil==2.9.0.post0
+- PyYAML==6.0.2
+- redis==5.0.8
+- referencing==0.35.1
+- rpds-py==0.20.0
+- six==1.16.0
+- sniffio==1.3.1
+- sqlparse==0.5.1
+- tomli==2.0.1
+- toposort==1.10
+- tqdm==4.66.5
+- typing_extensions==4.12.2
+- tzdata==2024.1
+- uritemplate==4.1.1
+<br/><br/><br/><br/>
+
+
+
 
 ## **설치 및 실행 방법**
 **1. 클론 리포지토리**
@@ -51,13 +116,13 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 ```
-
+<br/><br/><br/><br/>
 ## **RESTful API 명세서**
 https://documenter.getpostman.com/view/38004701/2sAXjSyomz
 **각 기능별 Postman에서 기능 점검하여 문서화함.**
+<br/><br/><br/><br/><br/><br/>
 
-
-# **기능 구현**
+## **기능 구현**
 ### **MVP(Minimum Viable Product)**
 
 - **Refrresh Token**
@@ -107,7 +172,7 @@ https://documenter.getpostman.com/view/38004701/2sAXjSyomz
     - **검증**: 로그인 한 사용자만 본인 프로필 수정 가능. 수정된 이메일은 기존 다른 사용자의 이메일과 username은 중복되면 안 됨.
     - **구현**: 입력된 정보를 검증 후 데이터베이스를 업데이트.
 
- 
+ <br/><br/><br/><br/>
 ### **상품 관련 기능**
 
 - **상품 등록**
@@ -141,7 +206,7 @@ https://documenter.getpostman.com/view/38004701/2sAXjSyomz
 - **페이지네이션 및 필터링(검색기능)**
     - **조건**: 상품 목록 조회 시 적용됩니다.
  
-
+<br/><br/><br/><br/>
 ### **데이터베이스 관계 모델링 기능**
 
 - **팔로잉 시스템**
@@ -149,7 +214,7 @@ https://documenter.getpostman.com/view/38004701/2sAXjSyomz
 - **게시글 좋아요 기능**
     - 등록된 게시물 간의 **좋아요** 기능.
  
-
+<br/><br/><br/><br/>
 ## **프로젝트 구조 섹션**
 ```
 .
@@ -191,7 +256,7 @@ https://documenter.getpostman.com/view/38004701/2sAXjSyomz
 ├─manage.py
 └──requirements.txt
 ```
-
+<br/><br/><br/><br/>
 ## **트러블 슈팅(Troubleshootiong) 및 해결법**
 **1. 설치 중 의존성 문제:**
 - `pip install -r requirements.txt`를 실행할 때 특정 패키지 설치 오류가 발생할 수 있습니다. 이 경우, Python 버전 호환성 문제일 수 있으므로 README에 Python 버전을 명시하세요.
