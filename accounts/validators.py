@@ -5,7 +5,7 @@ from rest_framework.serializers import ValidationError
 from .models import User
 
 # 회원가입 시, validator
-def validate_signup(user_data):
+def validate_signup(user, user_data):
     err_msg = []
 
     # validation_username
@@ -18,6 +18,12 @@ def validate_signup(user_data):
     password2 = user_data.get("password2")
     if not password == password2:
         err_msg.append({'password':'비밀번호가 일치하지 않습니다.'})
+    else:
+        # settings에 있는 validator 사용한 유효성 검사 (비밀번호 자체에 대한 유효성 검사사)
+        try:
+            validate_password(password, user)
+        except ValidationError as e:
+            err_msg.append({"new_password": str(e)})
 
     # validation_email
     if email := user_data.get("email"):

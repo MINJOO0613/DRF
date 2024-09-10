@@ -28,8 +28,10 @@ class SignupView(APIView):
 # - 검증: username과 이메일은 유일해야 하며, 이메일 중복 검증(선택 기능).
 # - 구현: 데이터 검증 후 저장.
     def post(self, request):
+        user_obj = request.user
+
         # validation
-        is_valid, err_msg = validate_signup(request.data)
+        is_valid, err_msg = validate_signup(user_obj, request.data)
         if not is_valid:
             return Response({"error":err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -155,7 +157,7 @@ class PasswordChangeView(APIView):
         
 
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated | ReadOnly]
+    permission_classes = [IsAuthenticated]
 
 # 프로필 조회
 # - Endpoint: `/api/accounts/<str:username>`

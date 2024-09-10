@@ -3,11 +3,11 @@ from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Product
 from .serializers import ProductSerializer
-from .pagination import ProductPagination
+from .pagination import CustomProductPagination
 
 # permission (IsAuthenticated/ReadOnly)
 class ReadOnly(BasePermission):
@@ -15,7 +15,7 @@ class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
     
-
+# pagination(페이지네이션)
 class ProductListView(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
 
@@ -27,8 +27,8 @@ class ProductListView(APIView):
     def get(self, request):
         products = Product.objects.all()
 
-        # 페이지네이터 객체 생성
-        paginator = ProductPagination()
+        # 페이지네이터로 products 게시물 조회
+        paginator = CustomProductPagination()
         paginated_products = paginator.paginate_queryset(products, request)
 
         serializer = ProductSerializer(paginated_products, many=True)
