@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,venv,visualstudiocode,pycharm,macos,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,venv,visualstudiocode,pycharm,macos,windows
 
+
+# SECRET_KEY
+config.py
+
 ### macOS ###
 # General
 .DS_Store
