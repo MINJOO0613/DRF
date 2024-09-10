@@ -7,7 +7,7 @@ Spartamarket_DRF는 **Django Rest Framework로 만드는 API** 입니다.
 <br/><br/><br/><br/>
 
 ## **개발 기간**
-2024.09.01.~2024.09.10
+**2024.09.01.~2024.09.10**
 <br/><br/><br/><br/>
 
 ## **개발 환경**
@@ -118,7 +118,7 @@ python manage.py runserver
 ```
 <br/><br/><br/><br/>
 ## **RESTful API 명세서**
-https://documenter.getpostman.com/view/38004701/2sAXjSyomz
+**https://documenter.getpostman.com/view/38004701/2sAXjSyomz**
 **각 기능별 Postman에서 기능 점검하여 문서화함.**
 <br/><br/><br/><br/><br/><br/>
 
@@ -271,3 +271,7 @@ https://documenter.getpostman.com/view/38004701/2sAXjSyomz
 **4. 사용자 인증 관련 문제:**
 - 로그인 또는 로그아웃 시 토큰이 올바르게 발급되지 않거나 무효화되지 않는 경우. 이는 토큰 발급 로직의 오류이거나, 잘못된 토큰을 사용한 경우 발생할 수 있습니다.
 - **해결책:** `api/accounts/login` 및 `api/accounts/logout` 엔드포인트에서 사용되는 뷰를 점검하고, 토큰이 올바르게 관리되고 있는지 확인합니다.
+
+<br/><br/>
+## **트러블슈팅 해결법 자세히 보기**
+**https://minjoo0613.tistory.com/40**
